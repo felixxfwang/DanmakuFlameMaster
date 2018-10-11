@@ -1,7 +1,20 @@
 buildscript {
     repositories {
-        jcenter()
+        mavenLocal()
+        maven {
+            url "http://maven.oa.com/nexus/content/groups/androidbuild"
+        }
+        maven{//release发布路径
+            url "http://maven.oa.com/nexus/content/repositories/thirdparty"
+        }
+        maven{//debug发布路径
+            url "http://maven.oa.com/nexus/content/repositories/thirdparty-snapshots"
+        }
+        maven {
+            url "http://maven.oa.com/nexus/content/repositories/thirdparty/com/tencent/umall/hotfix/"
+        }
         google()
+        jcenter()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.0.1'
@@ -12,7 +25,20 @@ buildscript {
 
 allprojects {
     repositories {
-        jcenter()
+        mavenLocal()
+        maven {
+            url "http://maven.oa.com/nexus/content/groups/androidbuild"
+        }
+        maven{//release发布路径
+            url "http://maven.oa.com/nexus/content/repositories/thirdparty"
+        }
+        maven{//debug发布路径
+            url "http://maven.oa.com/nexus/content/repositories/thirdparty-snapshots"
+        }
+        maven {
+            url "http://maven.oa.com/nexus/content/repositories/thirdparty/com/tencent/umall/hotfix/"
+        }
         google()
+        jcenter()
     }
 }
