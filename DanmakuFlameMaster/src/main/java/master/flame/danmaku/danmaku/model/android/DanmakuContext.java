@@ -40,6 +40,8 @@ public class DanmakuContext implements Cloneable {
      */
     public Typeface mFont = null;
 
+    public boolean smartAdjustTime = false;
+
     /**
      * paint alpha:0-255
      */

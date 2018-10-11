@@ -19,10 +19,13 @@ package master.flame.danmaku.danmaku.renderer.android;
 import master.flame.danmaku.danmaku.model.BaseDanmaku;
 import master.flame.danmaku.danmaku.model.IDanmakus;
 import master.flame.danmaku.danmaku.model.IDisplayer;
+import master.flame.danmaku.danmaku.model.android.DanmakuContext;
 import master.flame.danmaku.danmaku.model.android.Danmakus;
 import master.flame.danmaku.danmaku.util.DanmakuUtils;
 
 public class DanmakusRetainer {
+
+    private DanmakuContext mContext;
 
     private IDanmakusRetainer rldrInstance = null;
 
@@ -32,18 +35,19 @@ public class DanmakusRetainer {
 
     private IDanmakusRetainer fbdrInstance = null;
 
-    public DanmakusRetainer(boolean alignBottom) {
-        alignBottom(alignBottom);
+    public DanmakusRetainer(DanmakuContext context) {
+        mContext = context;
+        alignBottom(mContext.isAlignBottom());
     }
 
     public void alignBottom(boolean alignBottom) {
-        rldrInstance = alignBottom ? new AlignBottomRetainer() : new AlignTopRetainer();
-        lrdrInstance = alignBottom ? new AlignBottomRetainer() : new AlignTopRetainer();
+        rldrInstance = alignBottom ? new AlignBottomRetainer(mContext) : new AlignTopRetainer(mContext);
+        lrdrInstance = alignBottom ? new AlignBottomRetainer(mContext) : new AlignTopRetainer(mContext);
         if (ftdrInstance == null) {
-            ftdrInstance = new FTDanmakusRetainer();
+            ftdrInstance = new FTDanmakusRetainer(mContext);
         }
         if (fbdrInstance == null) {
-            fbdrInstance = new AlignBottomRetainer();
+            fbdrInstance = new AlignBottomRetainer(mContext);
         }
     }
 
@@ -185,9 +189,14 @@ public class DanmakusRetainer {
             }
         }
 
+        protected DanmakuContext mConfig;
         protected Danmakus mVisibleDanmakus = new Danmakus(Danmakus.ST_BY_YPOS);
         protected boolean mCancelFixingFlag = false;
         protected RetainerConsumer mConsumer = new RetainerConsumer();
+
+        public AlignTopRetainer(DanmakuContext config) {
+            mConfig = config;
+        }
 
         @Override
         public void fix(BaseDanmaku drawItem, IDisplayer disp, Verifier verifier) {
@@ -259,6 +268,12 @@ public class DanmakusRetainer {
                 }
             }
 
+            // 如果是智能时间调整模式，看是否需要调整弹幕展示时间
+            if (mConfig.smartAdjustTime && willHit) {
+                drawItem.setTime(drawItem.getTime() + 500);
+                return;
+            }
+
             if (verifier != null && verifier.skipLayout(drawItem, topPos, lines, willHit)) {
                 return;
             }
@@ -294,6 +309,10 @@ public class DanmakusRetainer {
 
     private static class FTDanmakusRetainer extends AlignTopRetainer {
 
+        public FTDanmakusRetainer(DanmakuContext config) {
+            super(config);
+        }
+
         @Override
         protected boolean isOutVerticalEdge(boolean overwriteInsert, BaseDanmaku drawItem,
                                             IDisplayer disp, float topPos, BaseDanmaku firstItem, BaseDanmaku lastItem) {
@@ -306,6 +325,11 @@ public class DanmakusRetainer {
     }
 
     private static class AlignBottomRetainer extends FTDanmakusRetainer {
+
+        public AlignBottomRetainer(DanmakuContext config) {
+            super(config);
+        }
+
         protected class RetainerConsumer extends IDanmakus.Consumer<BaseDanmaku, RetainerState> {
             public IDisplayer disp;
             int lines = 0;

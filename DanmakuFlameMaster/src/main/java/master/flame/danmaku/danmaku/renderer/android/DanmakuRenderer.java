@@ -135,7 +135,7 @@ public class DanmakuRenderer extends Renderer {
 
     public DanmakuRenderer(DanmakuContext config) {
         mContext = config;
-        mDanmakusRetainer = new DanmakusRetainer(config.isAlignBottom());
+        mDanmakusRetainer = new DanmakusRetainer(config);
     }
 
     @Override
